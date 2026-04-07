@@ -1,6 +1,6 @@
 package com.corner.catvodcore.bean
 
-import com.corner.catvodcore.util.Utils
+import com.corner.util.net.Utils
 import com.corner.database.entity.History
 import com.corner.ui.scene.SnackBar
 import com.corner.util.Constants

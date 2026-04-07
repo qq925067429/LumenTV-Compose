@@ -1,4 +1,4 @@
-package com.corner.catvodcore.util
+package com.corner.util.json
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.builtins.MapSerializer
@@ -28,4 +28,3 @@ object JsonStrToMapSerializer: JsonTransformingSerializer<Map<String, String>>(M
     }
 
 }
-

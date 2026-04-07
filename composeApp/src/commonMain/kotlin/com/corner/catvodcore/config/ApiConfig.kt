@@ -8,9 +8,9 @@ import com.corner.catvodcore.bean.Site
 import com.corner.catvodcore.bean.Api
 import com.corner.catvodcore.enum.ConfigType
 import com.corner.catvodcore.loader.JarLoader
-import com.corner.catvodcore.util.Http
-import com.corner.catvodcore.util.Jsons
-import com.corner.catvodcore.util.Urls
+import com.corner.util.net.Http
+import com.corner.util.json.Jsons
+import com.corner.util.net.Urls
 import com.corner.catvodcore.viewmodel.GlobalAppState
 import com.corner.database.Db
 import com.corner.database.entity.Config

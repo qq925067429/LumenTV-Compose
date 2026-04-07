@@ -4,8 +4,8 @@ import com.corner.bean.SettingStore
 import com.corner.bean.SettingType
 import com.corner.catvodcore.bean.Site
 import com.corner.catvodcore.config.ApiConfig
-import com.corner.catvodcore.util.Http
-import com.corner.catvodcore.util.Jsons
+import com.corner.util.net.Http
+import com.corner.util.json.Jsons
 import com.corner.database.Db
 import com.corner.util.thisLogger
 import kotlinx.coroutines.CancellationException

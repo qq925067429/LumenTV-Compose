@@ -2,8 +2,8 @@ package com.corner.bean
 
 import org.apache.logging.log4j.Level
 import com.corner.bean.enums.PlayerType
-import com.corner.catvodcore.util.Jsons
-import com.corner.catvodcore.util.Paths
+import com.corner.util.json.Jsons
+import com.corner.util.io.Paths
 import com.corner.util.m3u8.M3U8FilterConfig
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json

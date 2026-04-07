@@ -1,6 +1,7 @@
-package com.corner.catvodcore.util
+package com.corner.util.net
 
-import com.corner.util.network.KtorClient
+import com.corner.catvodcore.bean.Site
+import com.corner.util.core.Constants
 import com.github.catvod.bean.Doh
 import org.slf4j.LoggerFactory
 import kotlinx.serialization.json.Json
@@ -85,7 +86,7 @@ class Http {
                     .connectTimeout(10, TimeUnit.SECONDS)
                     .readTimeout(10, TimeUnit.SECONDS)
                     .writeTimeout(10, TimeUnit.SECONDS)
-                    .proxy(KtorClient.getProxy())
+                    .proxy(com.corner.util.network.KtorClient.getProxy())
                     .followRedirects(true)
                     .sslSocketFactory(getSSLSocketFactory(), getX509TrustManager()!!)
                     .hostnameVerifier(getHostnameVerifier())
@@ -108,7 +109,7 @@ class Http {
         fun setDoh(doh: Doh) {
             log.info("[DNS Setting]Setting DoH: ${doh.name}, URL: ${doh.url}")
             val dnsClient =
-                OkHttpClient().newBuilder().cache(Cache(Paths.doh(), 8000))
+                OkHttpClient().newBuilder().cache(Cache(com.corner.util.io.Paths.doh(), 8000))
                     .callTimeout(Duration.of(5, ChronoUnit.SECONDS))
                     .build()
             Companion.doh =

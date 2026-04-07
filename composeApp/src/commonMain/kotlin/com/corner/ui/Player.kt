@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.corner.bean.PlayerStateCache
 import com.corner.bean.SettingStore
-import com.corner.catvodcore.util.Utils
+import com.corner.util.net.Utils
 import com.corner.catvodcore.viewmodel.GlobalAppState
 import com.corner.ui.nav.vm.DetailViewModel
 import com.corner.ui.player.DefaultControls

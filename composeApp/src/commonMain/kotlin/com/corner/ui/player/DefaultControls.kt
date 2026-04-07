@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import com.corner.catvodcore.bean.Vod
-import com.corner.catvodcore.util.Utils
+import com.corner.util.net.Utils
 import com.corner.catvodcore.viewmodel.GlobalAppState
 import com.corner.ui.player.vlcj.VlcjFrameController
 import com.corner.util.formatTimestamp

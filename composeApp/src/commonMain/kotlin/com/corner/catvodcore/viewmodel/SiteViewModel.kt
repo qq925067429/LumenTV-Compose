@@ -11,9 +11,9 @@ import com.corner.catvodcore.bean.Url
 import com.corner.catvodcore.bean.add
 import com.corner.catvodcore.bean.v
 import com.corner.catvodcore.config.ApiConfig
-import com.corner.catvodcore.util.Http
-import com.corner.catvodcore.util.Jsons
-import com.corner.catvodcore.util.Utils
+import com.corner.util.net.Http
+import com.corner.util.json.Jsons
+import com.corner.util.net.Utils
 import com.corner.catvodcore.viewmodel.GlobalAppState.hideProgress
 import com.corner.catvodcore.viewmodel.GlobalAppState.showProgress
 import com.corner.util.copyAdd

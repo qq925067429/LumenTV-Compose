@@ -47,10 +47,10 @@ class KtorClient {
                     
                     // SSL配置
                     sslSocketFactory(
-                        com.corner.catvodcore.util.Http.getSSLSocketFactory(),
-                        com.corner.catvodcore.util.Http.getX509TrustManager()!!
+                        com.corner.util.net.Http.getSSLSocketFactory(),
+                        com.corner.util.net.Http.getX509TrustManager()!!
                     )
-                    hostnameVerifier(com.corner.catvodcore.util.Http.getHostnameVerifier())
+                    hostnameVerifier(com.corner.util.net.Http.getHostnameVerifier())
                     
                     // 拦截器（与OkHttp同步）
                     addInterceptor(OkhttpInterceptor())

@@ -1,8 +1,8 @@
 package com.corner.bean
 
 import com.corner.catvodcore.viewmodel.SiteViewModel
-import com.corner.catvodcore.util.Http
-import com.corner.catvodcore.util.Jsons
+import com.corner.util.net.Http
+import com.corner.util.json.Jsons
 import com.corner.catvodcore.viewmodel.GlobalAppState
 import io.ktor.http.*
 import kotlinx.coroutines.launch

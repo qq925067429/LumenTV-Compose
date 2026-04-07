@@ -13,7 +13,7 @@ import com.corner.catvodcore.bean.Vod.Companion.getPage
 import com.corner.catvodcore.bean.Vod.Companion.isEmpty
 import com.corner.catvodcore.bean.*
 import com.corner.catvodcore.config.ApiConfig
-import com.corner.catvodcore.util.Utils
+import com.corner.util.net.Utils
 import com.corner.catvodcore.viewmodel.DetailFromPage
 import com.corner.catvodcore.viewmodel.GlobalAppState
 import com.corner.catvodcore.viewmodel.GlobalAppState.hideProgress
@@ -1609,7 +1609,7 @@ class DetailViewModel : BaseViewModel() {
                     if (vmPlayerType.first() == PlayerType.Outie.id) {
                         log.debug("切换清晰度:{}", playUrl)
                         Play.start(playUrl, currentEp?.name ?: "未知剧集")
-                    }else if (vmPlayerType.first() == PlayerType.Web.id){
+                    } else if (vmPlayerType.first() == PlayerType.Web.id) {
                         openBrowserWithWebPlayer(playUrl, currentEp?.name ?: "未知剧集")
                     }
                 }
@@ -1744,6 +1744,14 @@ class DetailViewModel : BaseViewModel() {
                 return@launch                                // 结束当前协程
             } else {
                 val correctDetailForPlay = _state.value.detail // 获取包含正确 activated 状态的最新 detail
+
+                if (lifecycleManager.lifecycleState.value == Playing) { // 如果播放器正在播放，结束播放
+                    log.debug("切换选集,结束播放,当前播放器状态: {}", lifecycleManager.lifecycleState.value)
+                    lifecycleManager.transitionTo(Ended) {
+                        lifecycleManager.ended()
+                    }
+                }
+
                 startPlay(correctDetailForPlay, it) // [chooseEp]使用最新的 detail 来播放
             }
         }

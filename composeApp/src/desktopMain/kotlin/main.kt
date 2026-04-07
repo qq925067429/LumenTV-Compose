@@ -10,7 +10,7 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import com.corner.RootContent
 import com.corner.bean.SettingStore
-import com.corner.catvodcore.util.Utils.printSystemInfo
+import com.corner.util.net.Utils.printSystemInfo
 import com.corner.catvodcore.viewmodel.GlobalAppState
 import com.corner.init.Init
 import com.corner.init.TVLogConfigurator

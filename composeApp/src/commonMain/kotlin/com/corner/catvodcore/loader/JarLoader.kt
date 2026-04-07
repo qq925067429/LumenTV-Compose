@@ -2,10 +2,10 @@ package com.corner.catvodcore.loader
 
 import com.corner.catvodcore.Constant
 import com.corner.catvodcore.config.ApiConfig
-import com.corner.catvodcore.util.Http
-import com.corner.catvodcore.util.Paths
-import com.corner.catvodcore.util.Urls
-import com.corner.catvodcore.util.Utils
+import com.corner.util.net.Http
+import com.corner.util.io.Paths
+import com.corner.util.net.Urls
+import com.corner.util.net.Utils
 import com.corner.util.thisLogger
 import com.github.catvod.crawler.Spider
 import kotlinx.coroutines.CoroutineScope

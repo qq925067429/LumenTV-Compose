@@ -66,7 +66,7 @@ import com.corner.bean.*
 import com.corner.bean.enums.PlayerType
 import com.corner.catvodcore.config.ApiConfig
 import com.corner.catvodcore.enum.ConfigType
-import com.corner.catvodcore.util.Paths
+import com.corner.util.io.Paths
 import com.corner.catvodcore.viewmodel.GlobalAppState.hideProgress
 import com.corner.catvodcore.viewmodel.GlobalAppState.showProgress
 import com.corner.database.Db
@@ -87,7 +87,7 @@ import java.awt.datatransfer.DataFlavor
 import java.io.File
 import java.net.URI
 import androidx.compose.runtime.collectAsState
-import com.corner.catvodcore.util.Http
+import com.corner.util.net.Http
 import com.corner.catvodcore.viewmodel.GlobalAppState
 import com.corner.util.m3u8.M3U8FilterConfig
 import com.github.catvod.bean.Doh

@@ -1,7 +1,7 @@
 package com.corner.util.network
 
 import androidx.compose.ui.graphics.painter.BitmapPainter
-import com.corner.catvodcore.util.Jsons
+import com.corner.util.json.Jsons
 import com.seiko.imageloader.component.fetcher.FetchResult
 import com.seiko.imageloader.component.fetcher.Fetcher
 import com.seiko.imageloader.option.Options

@@ -1,8 +1,8 @@
-package com.corner.catvodcore.util
+package com.corner.util.io
 
 import com.corner.ui.scene.SnackBar
-import com.corner.util.OperatingSystem
-import com.corner.util.UserDataDirProvider
+import com.corner.util.system.OperatingSystem
+import com.corner.util.system.UserDataDirProvider
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.nio.file.Path
@@ -64,7 +64,7 @@ object Paths {
     }
 
     fun jar(fileName:String):File{
-        return File(jar(), Utils.md5(fileName) + ".jar")
+        return File(jar(), com.corner.util.net.Utils.md5(fileName) + ".jar")
     }
 
     fun write(path:File, bytes: ByteArray?):File{

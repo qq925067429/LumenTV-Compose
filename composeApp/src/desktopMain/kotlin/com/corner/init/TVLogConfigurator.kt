@@ -1,7 +1,7 @@
 package com.corner.init
 
 import com.corner.bean.SettingStore
-import com.corner.catvodcore.util.Paths
+import com.corner.util.io.Paths
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.LoggerContext

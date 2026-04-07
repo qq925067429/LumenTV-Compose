@@ -1,6 +1,6 @@
-package com.corner.catvodcore.util
+package com.corner.util.net
 
-import com.corner.util.thisLogger
+import com.corner.util.core.thisLogger
 import java.net.URI
 
 object Urls {
