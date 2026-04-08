@@ -7,8 +7,6 @@ import com.corner.ui.player.PlayerLifecycleManager
 import com.corner.ui.player.PlayerLifecycleState.*
 import com.corner.ui.player.vlcj.VlcjFrameController
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import org.slf4j.LoggerFactory
 

@@ -5,10 +5,6 @@ import com.corner.catvodcore.bean.Vod
 import com.corner.catvodcore.bean.Vod.Companion.getPage
 import com.corner.ui.player.PlayerLifecycleManager
 import com.corner.util.Constants
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import org.apache.commons.lang3.StringUtils
 
 /**
  * EpisodeManager实现类

@@ -1,6 +1,5 @@
 package com.corner.catvodcore.bean
 
-import com.corner.catvodcore.bean.Vod.Companion.isEmpty
 import com.corner.util.json.JsonStrToMapSerializer
 import com.corner.util.json.ToStringSerializer
 import kotlinx.serialization.SerialName

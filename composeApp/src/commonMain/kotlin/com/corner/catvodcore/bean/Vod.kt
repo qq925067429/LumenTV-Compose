@@ -82,18 +82,8 @@ data class Vod(
                     // 检查是否已存在相同名称的 Flag
                     val existingFlag = flagMap[flagName]
                     if (existingFlag != null) {
-                        // 如果已存在，将新剧集合并到现有 Flag 中
-                        log.debug("检测到重复线路: $flagName，合并剧集")
-                        val tempFlag = Flag.create(flagName)
-                        tempFlag.createEpisode(playUrls[i])
-                        // 合并不重复的剧集
-                        tempFlag.episodes.forEach { newEp ->
-                            if (!existingFlag.episodes.any { it.url == newEp.url }) {
-                                existingFlag.episodes.add(newEp)
-                            }
-                        }
-                        // 重新排序
-                        existingFlag.episodes.sortBy { it.number }
+                        // 如果已存在，直接丢弃重复的剧集
+                        log.debug("检测到重复线路: $flagName，跳过")
                     } else {
                         // 创建新的 Flag
                         val item = Flag.create(flagName)
