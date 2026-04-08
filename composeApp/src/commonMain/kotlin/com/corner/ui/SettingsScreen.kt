@@ -1039,7 +1039,7 @@ fun WindowScope.SettingScene(vm: SettingViewModel, config: M3U8FilterConfig, onC
                                     SettingStore.setValue(SettingType.FPS_MONITOR, enabled.toString())
                                     vm.sync()
                                     SnackBar.postMsg(
-                                        if (enabled) "FPS 监控已开启,可能需要重启生效" else "FPS 监控已关闭",
+                                        if (enabled) "FPS 监控已开启" else "FPS 监控已关闭",
                                         type = SnackBar.MessageType.INFO
                                     )
                                 },

@@ -136,8 +136,10 @@ fun WindowScope.RootContent(
             val showProgress = GlobalAppState.showProgress.collectAsState()
             LoadingIndicator(showProgress = showProgress.value, withOverlay = true)
 
-            // FPS 监控组件
-            val fpsMonitorEnabled = SettingStore.getSettingItem(SettingType.FPS_MONITOR).toBoolean()
+            // FPS 监控组件 - 使用 settingVersion 确保响应式更新
+            val fpsMonitorEnabled by remember(settingVersion.version) {
+                derivedStateOf { SettingStore.getSettingItem(SettingType.FPS_MONITOR).toBoolean() }
+            }
             if (fpsMonitorEnabled) {
                 FpsMonitor(
                     modifier = Modifier
