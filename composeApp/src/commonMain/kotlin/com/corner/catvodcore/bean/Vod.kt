@@ -68,15 +68,39 @@ data class Vod(
         }
 
         fun Vod.setVodFlags() {
-            val playFlags: List<String>? = vodPlayFrom?.split("\\$\\$\\$".toRegex())
-            val playUrls: List<String>? = vodPlayUrl?.split("\\$\\$\\$".toRegex())
-
+            val playFlags: List<String>? = vodPlayFrom?.split("\\\$\\\$\\\$".toRegex())
+            val playUrls: List<String>? = vodPlayUrl?.split("\\\$\\\$\\\$".toRegex())
+        
             if (!playFlags.isNullOrEmpty() && !playUrls.isNullOrEmpty()) {
+                // 使用 Map 来跟踪已存在的 Flag，key 为 flag 名称
+                val flagMap = mutableMapOf<String, Flag>()
+                        
                 for (i in 0 until playFlags.size) {
                     if (playFlags[i].isEmpty() || i >= playUrls.size) continue
-                    val item = Flag.create(playFlags[i].trim())
-                    item.createEpisode(playUrls[i])
-                    vodFlags.add(item)
+                    val flagName = playFlags[i].trim()
+                            
+                    // 检查是否已存在相同名称的 Flag
+                    val existingFlag = flagMap[flagName]
+                    if (existingFlag != null) {
+                        // 如果已存在，将新剧集合并到现有 Flag 中
+                        log.debug("检测到重复线路: $flagName，合并剧集")
+                        val tempFlag = Flag.create(flagName)
+                        tempFlag.createEpisode(playUrls[i])
+                        // 合并不重复的剧集
+                        tempFlag.episodes.forEach { newEp ->
+                            if (!existingFlag.episodes.any { it.url == newEp.url }) {
+                                existingFlag.episodes.add(newEp)
+                            }
+                        }
+                        // 重新排序
+                        existingFlag.episodes.sortBy { it.number }
+                    } else {
+                        // 创建新的 Flag
+                        val item = Flag.create(flagName)
+                        item.createEpisode(playUrls[i])
+                        vodFlags.add(item)
+                        flagMap[flagName] = item
+                    }
                 }
             }
             for (item in vodFlags) {

@@ -11,10 +11,8 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import com.seiko.imageloader.ImageLoader
 import com.seiko.imageloader.LocalImageLoader
-import com.seiko.imageloader.model.ImageAction
 import com.seiko.imageloader.model.ImageEvent
 import com.seiko.imageloader.model.ImageResult
-import com.seiko.imageloader.toPainter
 import com.seiko.imageloader.ui.AutoSizeBox
 
 /**
