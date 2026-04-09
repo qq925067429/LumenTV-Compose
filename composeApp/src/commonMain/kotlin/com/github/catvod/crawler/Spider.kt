@@ -1,6 +1,6 @@
 package com.github.catvod.crawler
 
-import com.corner.catvodcore.util.Http
+import com.corner.util.net.Http
 import okhttp3.Dns
 import okhttp3.OkHttpClient
 
@@ -62,10 +62,10 @@ open class Spider{
 
     companion object {
         @JvmField
-        val dns: Dns = Http.dns("Spider")
+        val dns: Dns = Http.dns()
         @JvmStatic
         fun safeDns(): Dns {
-            return Http.dns("Spider")
+            return Http.dns()
         }
     }
 
@@ -74,5 +74,5 @@ open class Spider{
     }
 
     val dns: Dns
-        get() = Http.dns("Spider")
+        get() = Http.dns()
 }

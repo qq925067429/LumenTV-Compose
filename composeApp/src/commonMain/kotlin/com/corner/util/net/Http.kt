@@ -1,6 +1,7 @@
-package com.corner.catvodcore.util
+package com.corner.util.net
 
-import com.corner.util.network.KtorClient
+import com.corner.catvodcore.bean.Site
+import com.corner.util.core.Constants
 import com.github.catvod.bean.Doh
 import org.slf4j.LoggerFactory
 import kotlinx.serialization.json.Json
@@ -19,16 +20,10 @@ import java.time.temporal.ChronoUnit
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.*
-import java.util.logging.Logger
-import java.util.logging.Level
 
 class Http {
     companion object {
         private val log = LoggerFactory.getLogger(Http::class.java)
-
-        init {
-            Logger.getLogger(OkHttpClient::class.java.name).level = Level.FINE
-        }
 
         private var doh: DnsOverHttps? = null
         private var client: OkHttpClient? = null
@@ -84,24 +79,28 @@ class Http {
         private val builder: OkHttpClient.Builder
             get() {
                 val dispatcher = Dispatcher()
-                return OkHttpClient().newBuilder().connectTimeout(10, TimeUnit.SECONDS)
-                    .proxy(KtorClient.getProxy())
-                    .readTimeout(10, TimeUnit.SECONDS).writeTimeout(10, TimeUnit.SECONDS)
+                dispatcher.maxRequests = 64
+                dispatcher.maxRequestsPerHost = 5
+
+                return OkHttpClient().newBuilder()
+                    .connectTimeout(10, TimeUnit.SECONDS)
+                    .readTimeout(10, TimeUnit.SECONDS)
+                    .writeTimeout(10, TimeUnit.SECONDS)
+                    .proxy(com.corner.util.network.KtorClient.getProxy())
                     .followRedirects(true)
                     .sslSocketFactory(getSSLSocketFactory(), getX509TrustManager()!!)
-                    .hostnameVerifier((getHostnameVerifier()))
-//                    .callTimeout(Duration.of(3, ChronoUnit.SECONDS))
+                    .hostnameVerifier(getHostnameVerifier())
                     .dispatcher(dispatcher)
-                    .dns(dns("OkHttpClient"))
+                    .dns(dns())
+                    .addInterceptor(com.github.catvod.net.OkhttpInterceptor())
+                    .addInterceptor(com.corner.util.m3u8.M3U8AdFilterInterceptor.Interceptor())
             }
 
 
-        fun dns(info: String?): Dns {
+        fun dns(): Dns {
             return if (doh == null) {
-                log.info("[DNS:${info}]Using SYSTEM DNS")
                 Dns.SYSTEM
             } else {
-                log.info("[DNS:${info}]Using DoH DNS: ${doh!!.url}")
                 doh!!
             }
         }
@@ -110,7 +109,7 @@ class Http {
         fun setDoh(doh: Doh) {
             log.info("[DNS Setting]Setting DoH: ${doh.name}, URL: ${doh.url}")
             val dnsClient =
-                OkHttpClient().newBuilder().cache(Cache(Paths.doh(), 8000))
+                OkHttpClient().newBuilder().cache(Cache(com.corner.util.io.Paths.doh(), 8000))
                     .callTimeout(Duration.of(5, ChronoUnit.SECONDS))
                     .build()
             Companion.doh =

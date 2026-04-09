@@ -36,11 +36,11 @@ import com.corner.database.entity.History
 import com.corner.ui.nav.vm.HistoryViewModel
 import com.corner.ui.scene.BackRow
 import com.corner.ui.scene.ControlBar
-import com.seiko.imageloader.ui.AutoSizeImage
+import com.corner.ui.components.AutoSizeImageWithLoading
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import lumentv_compose.composeapp.generated.resources.Res
-import lumentv_compose.composeapp.generated.resources.loading
+import lumentv_compose.composeapp.generated.resources.no_img
 
 @Composable
 fun HistoryItem(
@@ -66,14 +66,27 @@ fun HistoryItem(
         }) {
             // 将Box布局改为Column以垂直排列内容
             Column(modifier = Modifier.fillMaxWidth()) {
-                Box(modifier = modifier) {
-                    AutoSizeImage(
+                Box(
+                    modifier = modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                ) {
+                    AutoSizeImageWithLoading(
                         url = history.vodPic!!,
-                        modifier = Modifier.height(220.dp),
                         contentDescription = history.vodName,
+                        modifier = Modifier.height(220.dp).fillMaxWidth(),
                         contentScale = ContentScale.Crop,
-                        placeholderPainter = { painterResource(Res.drawable.loading) },
-                        errorPainter = { painterResource(Res.drawable.loading) })
+                        errorPainter = { painterResource(Res.drawable.no_img) },
+                        loadingIndicator = {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(36.dp).align(Alignment.Center),
+                                strokeWidth = 3.dp,
+                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                                trackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                            )
+                        }
+                    )
+                    
                     Text(
                         text = history.vodName!!,
                         modifier = Modifier.background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f))

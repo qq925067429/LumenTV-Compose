@@ -1,4 +1,4 @@
-package com.corner.catvodcore.util
+package com.corner.util.net
 
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.io.IOException

@@ -66,7 +66,7 @@ import com.corner.bean.*
 import com.corner.bean.enums.PlayerType
 import com.corner.catvodcore.config.ApiConfig
 import com.corner.catvodcore.enum.ConfigType
-import com.corner.catvodcore.util.Paths
+import com.corner.util.io.Paths
 import com.corner.catvodcore.viewmodel.GlobalAppState.hideProgress
 import com.corner.catvodcore.viewmodel.GlobalAppState.showProgress
 import com.corner.database.Db
@@ -87,7 +87,7 @@ import java.awt.datatransfer.DataFlavor
 import java.io.File
 import java.net.URI
 import androidx.compose.runtime.collectAsState
-import com.corner.catvodcore.util.Http
+import com.corner.util.net.Http
 import com.corner.catvodcore.viewmodel.GlobalAppState
 import com.corner.util.m3u8.M3U8FilterConfig
 import com.github.catvod.bean.Doh
@@ -111,7 +111,7 @@ fun WindowScope.SettingScene(vm: SettingViewModel, config: M3U8FilterConfig, onC
     DisposableEffect("setting") {
         vm.sync()
         onDispose {
-            log.info("设置已保存：\n{}", model.value.settingList.joinToString("\n"))
+            log.info("设置已保存：{}", model.value.settingList.joinToString(", "))
             SettingStore.write()
         }
     }
@@ -1004,6 +1004,55 @@ fun WindowScope.SettingScene(vm: SettingViewModel, config: M3U8FilterConfig, onC
                 }
             }
 
+            // FPS 监控设置项
+            item {
+                SettingCard(
+                    title = "FPS 监控",
+                    icon = Icons.Default.Info
+                ) {
+                    val fpsMonitorEnabled = remember {
+                        mutableStateOf(SettingStore.getSettingItem(SettingType.FPS_MONITOR).toBoolean())
+                    }
+
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = if (fpsMonitorEnabled.value) "FPS 监控：开启" else "FPS 监控：关闭",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Text(
+                                    text = "在屏幕左上角显示当前帧率和系统信息，用于性能调试",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
+                            }
+                            Switch(
+                                checked = fpsMonitorEnabled.value,
+                                onCheckedChange = { enabled ->
+                                    fpsMonitorEnabled.value = enabled
+                                    SettingStore.setValue(SettingType.FPS_MONITOR, enabled.toString())
+                                    vm.sync()
+                                    SnackBar.postMsg(
+                                        if (enabled) "FPS 监控已开启" else "FPS 监控已关闭",
+                                        type = SnackBar.MessageType.INFO
+                                    )
+                                },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = MaterialTheme.colorScheme.primary,
+                                    checkedTrackColor = MaterialTheme.colorScheme.primaryContainer
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+
             // 重置按钮
             item {
                 var showConfirmDialog by remember { mutableStateOf(false) }
@@ -1306,7 +1355,7 @@ fun AboutDialog(
                         )
 
                         Text(
-                            text = "1.1.4",
+                            text = "1.1.5",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )

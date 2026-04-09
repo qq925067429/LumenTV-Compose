@@ -186,5 +186,12 @@ object OkHttp {
             .writeTimeout(10, TimeUnit.SECONDS)
             .sslSocketFactory(SSLSocketClient.sSLSocketFactory, SSLSocketClient.x509TrustManager)
             .hostnameVerifier(SSLSocketClient.hostnameVerifier)
+            .apply {
+                // 配置Dispatcher以控制并发
+                dispatcher(okhttp3.Dispatcher().apply {
+                    maxRequests = 64
+                    maxRequestsPerHost = 5
+                })
+            }
 
 }

@@ -1,12 +1,11 @@
 package com.corner.util.play
 
-import MPC
 import PotPlayer
 import cn.hutool.core.util.ZipUtil
 import com.corner.bean.SettingStore
 import com.corner.catvodcore.bean.Result
 import com.corner.catvodcore.bean.v
-import com.corner.catvodcore.util.Paths
+import com.corner.util.io.Paths
 import com.corner.ui.getPlayerSetting
 import com.corner.ui.scene.SnackBar
 import com.corner.util.Constants

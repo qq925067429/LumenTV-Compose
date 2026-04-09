@@ -8,9 +8,10 @@ import com.corner.catvodcore.bean.Site
 import com.corner.catvodcore.bean.Api
 import com.corner.catvodcore.enum.ConfigType
 import com.corner.catvodcore.loader.JarLoader
-import com.corner.catvodcore.util.Http
-import com.corner.catvodcore.util.Jsons
-import com.corner.catvodcore.util.Urls
+import com.corner.util.net.Http
+import com.corner.util.json.Jsons
+import com.corner.util.json.cleanJsonComments
+import com.corner.util.net.Urls
 import com.corner.catvodcore.viewmodel.GlobalAppState
 import com.corner.database.Db
 import com.corner.database.entity.Config
@@ -68,7 +69,9 @@ object ApiConfig {
                 throw NoStackTraceException("配置数据为空")
             }
 
-            val apiConfig = Jsons.decodeFromString<Api>(data)
+            // 清理JSON中的注释
+            val cleanedData = cleanJsonComments(data)
+            val apiConfig = Jsons.decodeFromString<Api>(cleanedData)
             val updatedApi = apiConfig.copy(url = cfg.url, data = data, cfg = cfg, ref = apiConfig.ref + 1)
             apiFlow.update { updatedApi }
 
@@ -168,19 +171,26 @@ object ApiConfig {
     private fun getData(str: String, isJson: Boolean): String? {
         try {
             if (StringUtils.isBlank(str)) {
+                log.debug("getData: 输入字符串为空, isJson={}", isJson)
                 return ""
             }
             if (isJson) {
-                return Jsons.decodeFromString(str)
+                // 如果已经是JSON字符串，直接返回，不需要再次解析
+                log.debug("getData: 使用JSON模式，字符串长度={}", str.length)
+                return str
             } else if (str.startsWith("http")) {
+                log.debug("getData: 从URL获取配置: {}", str)
                 return Http.get(str, connectTimeout = 60, readTimeout = 60)
                     .execute()
                     .use { response ->
-                        response.body.string()
+                        val body = response.body.string()
+                        log.debug("getData: 从URL获取成功，长度={}", body.length)
+                        body
                     }
             } else if (str.startsWith("file")) {
                 val file = Urls.convert(str).toPath().toFile()
                 if (!file.exists()) {
+                    log.debug("getData: 文件不存在: {}", str)
                     return ""
                 }
                 return Files.readString(file.toPath())

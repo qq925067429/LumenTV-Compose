@@ -54,7 +54,7 @@ import com.corner.catvodcore.bean.Vod
 import com.corner.catvodcore.bean.Vod.Companion.isEmpty
 import com.corner.catvodcore.bean.Episode
 import com.corner.catvodcore.bean.Url
-import com.corner.catvodcore.util.Utils
+import com.corner.util.net.Utils
 import com.corner.catvodcore.viewmodel.GlobalAppState
 import com.corner.catvodcore.viewmodel.GlobalAppState.hideProgress
 import com.corner.catvodcore.viewmodel.GlobalAppState.showProgress
@@ -687,8 +687,13 @@ private fun quickSearchResult(
                 items(searchResultList.value) {
                     QuickSearchItem(it) {
                         SiteViewModel.viewModelScope.launch {
-                            log.debug("开始加载新内容...")
-                            component.loadDetail(it)
+                            try {
+                                log.debug("开始加载新内容...")
+                                component.loadDetail(it)
+                            } catch (e: Exception) {
+                                log.error("加载详情失败: {}", e.message, e)
+                                SnackBar.postMsg("加载失败: ${e.message}", type = SnackBar.MessageType.ERROR)
+                            }
                         }
                     }
                 }

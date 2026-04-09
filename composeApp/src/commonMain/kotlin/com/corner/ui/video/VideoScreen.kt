@@ -57,16 +57,14 @@ import com.corner.ui.nav.vm.VideoViewModel
 import com.corner.ui.scene.*
 import com.corner.util.spider.SpiderTestUtil
 import com.corner.util.isScrollingUp
-import com.seiko.imageloader.ui.AutoSizeImage
+import com.corner.ui.components.AutoSizeImageWithLoading
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import lumentv_compose.composeapp.generated.resources.Res
 import lumentv_compose.composeapp.generated.resources.folder_back
-import lumentv_compose.composeapp.generated.resources.loading
-import lumentv_compose.composeapp.generated.resources.undraw_loading
-
+import lumentv_compose.composeapp.generated.resources.no_img
 @Composable
 fun VideoItem(
     modifier: Modifier,
@@ -102,14 +100,27 @@ fun VideoItem(
                     contentScale = ContentScale.Fit
                 )
             } else {
-                AutoSizeImage(
-                    url = vod.vodPic ?: "",
-                    modifier = picModifier,
-                    contentDescription = vod.vodName,
-                    contentScale = ContentScale.Crop,
-                    placeholderPainter = { painterResource(Res.drawable.undraw_loading) },
-                    errorPainter = { painterResource(Res.drawable.loading) }
-                )
+                Box(
+                    modifier = picModifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                ) {
+                    AutoSizeImageWithLoading(
+                        url = vod.vodPic ?: "",
+                        contentDescription = vod.vodName,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                        errorPainter = { painterResource(Res.drawable.no_img) },
+                        loadingIndicator = {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(36.dp).align(Alignment.Center),
+                                strokeWidth = 3.dp,
+                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                                trackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                            )
+                        }
+                    )
+                }
             }
 
             // 悬停时添加高亮效果，保持圆角

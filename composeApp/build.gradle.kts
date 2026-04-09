@@ -24,9 +24,6 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                val ktorVer = "3.1.2"
-                val logbackVer = "1.3.14"
-                val hutoolVer = "5.8.27"
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material3)
@@ -35,7 +32,7 @@ kotlin {
                 implementation(compose.components.uiToolingPreview)
                 implementation(compose.materialIconsExtended)
 
-                // room database access
+                // Database
                 implementation(libs.roomRuntime)
                 implementation(libs.roomGuava)
                 implementation(libs.roomKtx)
@@ -44,66 +41,67 @@ kotlin {
                 implementation(libs.androidx.lifecycle.viewmodel.compose)
                 implementation(libs.androidx.navigation.compose)
 
-                api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+                // JSON Processing
+                api(libs.kotlinx.serialization.json)
 
-                // tool
-                api("com.google.guava:guava:31.1-jre")
-                implementation("cn.hutool:hutool-all:$hutoolVer")
+                // Tools
+                api(libs.guava)
+                implementation(libs.hutool.all)
 
-                //DI
-                api("io.insert-koin:koin-core:3.5.3")
-                api("io.insert-koin:koin-test:3.5.3")
+                // Dependency Injection
+                api(libs.koin.core)
+                api(libs.koin.test)
 
-                // spider depend on
-                api("org.json:json:20231013")
-                implementation("com.google.code.gson:gson:2.10.1")
-                implementation("com.github.lookfirst:sardine:5.10")
-                implementation("cn.wanghaomiao:JsoupXpath:2.5.1")
-                implementation("org.jsoup:jsoup:1.15.3")
-                implementation("com.google.zxing:core:3.3.0")
-                implementation("org.nanohttpd:nanohttpd:2.3.1")
-                implementation("com.github.luben:zstd-jni:1.5.7-4")
+                // Spider Dependencies
+                api(libs.json.org)
+                implementation(libs.gson)
+                implementation(libs.sardine)
+                implementation(libs.jsoupxpath)
+                implementation(libs.jsoup)
+                implementation(libs.zxing.core)
+                implementation(libs.nanohttpd)
+                implementation(libs.zstd.jni)
 
-                //ktor http server
-                implementation("io.ktor:ktor-server-core:$ktorVer")
-                implementation("io.ktor:ktor-server-netty:$ktorVer")
-                implementation("io.ktor:ktor-server-cors:$ktorVer")
-                implementation("io.ktor:ktor-server-default-headers:$ktorVer")
-                implementation("io.ktor:ktor-server-content-negotiation:$ktorVer")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVer")
-                implementation("io.ktor:ktor-server-swagger:$ktorVer")
-                implementation("io.ktor:ktor-client-core:$ktorVer")
-                implementation("io.ktor:ktor-client-okhttp:$ktorVer")
-                implementation("io.ktor:ktor-server-html-builder:${ktorVer}")
-                implementation("io.ktor:ktor-server-websockets:${ktorVer}")
+                // Ktor HTTP Server & Client
+                implementation(libs.ktor.server.core)
+                implementation(libs.ktor.server.netty)
+                implementation(libs.ktor.server.cors)
+                implementation(libs.ktor.server.default.headers)
+                implementation(libs.ktor.server.content.negotiation)
+                implementation(libs.ktor.serialization.kotlinx.json)
+                implementation(libs.ktor.server.swagger)
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.okhttp)
+                implementation(libs.ktor.server.html.builder)
+                implementation(libs.ktor.server.websockets)
 
-                //kotlinx-html
-                implementation("org.jetbrains.kotlinx:kotlinx-html:0.11.0")
+                // Kotlinx HTML
+                implementation(libs.kotlinx.html)
 
-                // log
-                implementation("ch.qos.logback:logback-classic:$logbackVer")
-                implementation("org.apache.logging.log4j:log4j-core:2.20.0")
-                implementation("org.apache.logging.log4j:log4j-api:2.20.0")
-                implementation("org.fusesource.jansi:jansi:2.4.0")
+                // Logging
+                implementation(libs.log4j.core)
+                implementation(libs.log4j.api)
+                implementation(libs.log4j.slf4j2.impl)  // SLF4J 到 Log4j2 的桥接
+                implementation(libs.jansi)
 
-                // image-loader
+                // Image Loader
                 api(libs.image.loader)
 
-                api(project.dependencies.platform("com.squareup.okhttp3:okhttp-bom:5.0.0-alpha.14"))
-                api("com.squareup.okhttp3:okhttp")
-                api("com.squareup.okhttp3:okhttp-dnsoverhttps")
-
+                // OkHttp
+                api(project.dependencies.platform(libs.okhttp.bom))
+                api(libs.okhttp)
+                api(libs.okhttp.dnsoverhttps)
 
                 // DLNA
                 implementation(libs.jupnp.bom.compile)
                 implementation(libs.jupnp.support)
                 implementation(libs.jupnp.osgi)
 
+                // WebSocket
+                implementation(libs.java.websocket)
 
-                //web-player
-                implementation("org.java-websocket:Java-WebSocket:1.6.0")
-
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.7.3")
+                // Coroutines
+                implementation(libs.kotlinx.coroutines.swing)
             }
 
         }

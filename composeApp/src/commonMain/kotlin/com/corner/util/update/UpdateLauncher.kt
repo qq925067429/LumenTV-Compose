@@ -1,6 +1,6 @@
 package com.corner.util.update
 
-import com.corner.catvodcore.util.Paths
+import com.corner.util.io.Paths
 import com.corner.util.OperatingSystem
 import com.corner.util.UserDataDirProvider
 import io.ktor.client.HttpClient

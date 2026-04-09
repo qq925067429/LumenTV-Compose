@@ -1,6 +1,6 @@
 package com.corner.util.update
 
-import com.corner.catvodcore.util.Paths
+import com.corner.util.io.Paths
 import com.corner.util.OperatingSystem
 import com.corner.util.UserDataDirProvider
 import com.corner.util.network.KtorClient
@@ -15,7 +15,7 @@ class UpdateManager {
     companion object {
         private val log = LoggerFactory.getLogger(UpdateManager::class.java)
         private const val VERSION_URL = "https://github.com/clevebitr/LumenTV-Compose/releases/latest/download/version.json"
-        private const val CURRENT_VERSION = "1.1.4"
+        private const val CURRENT_VERSION = "1.1.5"
         private const val NO_REMIND_FILE = "no_remind_update.txt"
 
         private val json = Json {

@@ -1,6 +1,6 @@
 package com.corner.bean
 
-import com.corner.catvodcore.util.Jsons
+import com.corner.util.json.Jsons
 import kotlinx.serialization.Serializable
 
 @Serializable

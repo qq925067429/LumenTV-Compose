@@ -1,6 +1,6 @@
 package com.corner.catvodcore.bean
 
-import com.corner.catvodcore.util.Utils
+import com.corner.util.net.Utils
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import java.util.*

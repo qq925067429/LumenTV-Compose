@@ -10,9 +10,10 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import com.corner.RootContent
 import com.corner.bean.SettingStore
-import com.corner.catvodcore.util.Utils.printSystemInfo
+import com.corner.util.net.Utils.printSystemInfo
 import com.corner.catvodcore.viewmodel.GlobalAppState
 import com.corner.init.Init
+import com.corner.init.TVLogConfigurator
 import com.corner.init.generateImageLoader
 import com.corner.ui.UpdateDialog
 import com.corner.ui.Util
@@ -37,6 +38,9 @@ private val log = LoggerFactory.getLogger("main")
 private const val CHANGE_LOG_URL = "https://raw.githubusercontent.com/clevebitr/LumenTV-Compose/refs/heads/main/CHANGELOG.md"
 
 fun main() {
+    // 初始化 Log4j2 日志配置
+    TVLogConfigurator.configure()
+    
     launchErrorCatcher()
     printSystemInfo()
 
@@ -96,6 +100,8 @@ fun main() {
                         try {
                             window.isVisible = false
                             SettingStore.write()
+                            // 清理全局协程资源,避免内存泄漏
+                            GlobalAppState.cancelAllOperations("Application shutdown")
                             Init.stop()
                         } catch (e: Exception) {
                             log.error("关闭应用异常", e)
@@ -165,8 +171,8 @@ fun main() {
 
 private fun launchErrorCatcher() {
     Thread.setDefaultUncaughtExceptionHandler { _, e ->
-        SnackBar.postMsg("未知异常， 请查看日志", type = SnackBar.MessageType.ERROR)
+        SnackBar.postMsg("未知异常,请检查日志", type = SnackBar.MessageType.ERROR)
         log.error("未知异常", e)
-        Init.stop()
+//        Init.stop()
     }
 }

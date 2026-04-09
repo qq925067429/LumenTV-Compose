@@ -11,9 +11,9 @@ import com.corner.catvodcore.bean.Url
 import com.corner.catvodcore.bean.add
 import com.corner.catvodcore.bean.v
 import com.corner.catvodcore.config.ApiConfig
-import com.corner.catvodcore.util.Http
-import com.corner.catvodcore.util.Jsons
-import com.corner.catvodcore.util.Utils
+import com.corner.util.net.Http
+import com.corner.util.json.Jsons
+import com.corner.util.net.Utils
 import com.corner.catvodcore.viewmodel.GlobalAppState.hideProgress
 import com.corner.catvodcore.viewmodel.GlobalAppState.showProgress
 import com.corner.util.copyAdd
@@ -56,9 +56,17 @@ object SiteViewModel {
     val quickSearch: MutableState<CopyOnWriteArrayList<Collect>> =
         mutableStateOf(CopyOnWriteArrayList(listOf(Collect.all())))
 
+    /**
+     * 使用SupervisorJob确保单个任务失败不影响其他任务
+     * 注意: 由于是全局单例,此scope不会自动取消,需手动管理
+     */
     private val supervisorJob = SupervisorJob()
     val viewModelScope = createCoroutineScope(Dispatchers.IO)
 
+    /**
+     * 取消所有正在进行的任务
+     * 应在应用退出或需要重置时调用
+     */
     fun cancelAll() {
         supervisorJob.cancelChildren()
     }
@@ -109,8 +117,8 @@ object SiteViewModel {
     }
 
     fun detailContent(key: String, id: String): Result? {
-        // 切换视频时重置浏览器选择标志位
         DialogState.resetBrowserChoice()
+
         changeDialogState(false)
         _state.update { it.copy(isSpecialVideoLink = false) }
 
@@ -144,7 +152,7 @@ object SiteViewModel {
                 detail.value = rst
             }
         } catch (e: Exception) {
-            log.error("${site.name} detailContent 异常", e)
+            log.debug("${site.name} 后端错误（已忽略）: {}", e.message)
             return null
         }
         rst.list.forEach { it.site = site }
@@ -260,7 +268,7 @@ object SiteViewModel {
             }
             _state.update { it.copy(isSpecialVideoLink = true) }
             return // 特殊链接无需后续M3U8处理
-        }else{
+        } else {
             log.debug("未发现特殊链接:{}", urlStr)
         }
 

@@ -1,6 +1,6 @@
 package com.corner.init
 
-import com.corner.catvodcore.util.Paths
+import com.corner.util.io.Paths
 import com.corner.util.network.KtorHeaderUrlFetcher
 import com.seiko.imageloader.ImageLoader
 import com.seiko.imageloader.component.*
