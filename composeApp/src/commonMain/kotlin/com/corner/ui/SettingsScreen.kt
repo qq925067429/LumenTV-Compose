@@ -1355,7 +1355,7 @@ fun AboutDialog(
                         )
 
                         Text(
-                            text = "1.1.4",
+                            text = "1.1.5",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
