@@ -67,23 +67,40 @@ class KtorClient {
             block()
         }
 
-        fun getProxy():Proxy{
+        fun getProxy(): Proxy {
             val settingEnable = SettingStore.getSettingItem(SettingType.PROXY).parseAsSettingEnable()
-            if(!settingEnable.isEnabled) return Proxy.NO_PROXY
-            val uri = try {
-                URI.create(settingEnable.value)
+            
+            // 优先级1: 用户手动配置的代理
+            if (settingEnable.isEnabled && settingEnable.value.isNotBlank()) {
+                return parseProxyFromUrl(settingEnable.value)
+            }
+            
+            // 优先级2: 自动检测系统代理
+            log.debug("No manual proxy configured, attempting to detect system proxy...")
+            val systemProxy = com.corner.util.net.SystemProxyDetector.detectSystemProxy()
+            if (systemProxy != null) {
+                return systemProxy
+            }
+            
+            log.debug("No proxy configured, using direct connection")
+            return Proxy.NO_PROXY
+        }
+        
+        /**
+         * 从URL字符串解析代理配置
+         */
+        private fun parseProxyFromUrl(proxyUrl: String): Proxy {
+            return try {
+                val uri = URI.create(proxyUrl)
+                val type = when (uri.scheme?.lowercase()) {
+                    "socks", "socks5" -> Proxy.Type.SOCKS
+                    else -> Proxy.Type.HTTP
+                }
+                Proxy(type, InetSocketAddress(uri.host, uri.port))
             } catch (e: Exception) {
-                log.error("解析代理url异常 不使用代理",e)
-                return Proxy.NO_PROXY
+                log.error("解析代理URL失败: $proxyUrl", e)
+                Proxy.NO_PROXY
             }
-            var type:Proxy.Type = Proxy.Type.HTTP
-            when(uri.scheme){
-                "http"->type= Proxy.Type.HTTP
-                "https"->type= Proxy.Type.HTTP
-                "socks"->type= Proxy.Type.SOCKS
-                "socks5"->type= Proxy.Type.SOCKS
-            }
-            return Proxy(type, InetSocketAddress(uri.host, uri.port))
         }
     }
 }

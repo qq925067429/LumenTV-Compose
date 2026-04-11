@@ -2,6 +2,8 @@ package com.corner.server.plugins
 
 import cn.hutool.core.io.file.FileNameUtil
 import com.corner.server.logic.proxy
+import com.corner.util.network.createDefaultOkHttpClient
+import okhttp3.Call
 import com.corner.ui.scene.SnackBar
 import com.corner.util.m3u8.M3U8Cache
 import com.corner.util.toSingleValueMap
@@ -157,11 +159,8 @@ fun Application.configureRouting() {
                 return@get
             }
 
-            val client = OkHttpClient.Builder()
-                .followRedirects(true)
-                .connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .build()
+            // 使用带代理配置的HTTP客户端
+            val client = createDefaultOkHttpClient()
 
             try {
                 val requestBuilder = Request.Builder()
@@ -283,7 +282,8 @@ fun Application.configureRouting() {
                 errorResp(call, "URL解码失败")
                 return@get
             }
-            val client = OkHttpClient.Builder().build()
+            // 使用带代理配置的HTTP客户端
+            val client = createDefaultOkHttpClient()
             try {
                 val content = client.newCall(Request.Builder().url(decodedUrl).build())
                     .execute().use { response ->

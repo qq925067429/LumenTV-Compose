@@ -3,6 +3,7 @@ package com.corner.util.update
 import com.corner.util.io.Paths
 import com.corner.util.OperatingSystem
 import com.corner.util.UserDataDirProvider
+import com.corner.util.network.KtorClient
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -142,7 +143,8 @@ class UpdateLauncher {
 
             if (url != null) {
                 try {
-                    val client = HttpClient()
+                    // 使用带代理配置的HTTP客户端
+                    val client = KtorClient.createHttpClient()
                     val response: HttpResponse = client.get(url)
                     val channel: ByteReadChannel = response.body()
 
@@ -203,7 +205,8 @@ class UpdateLauncher {
 
         private suspend fun getLatestVersion(): String? {
             return try {
-                val client = HttpClient()
+                // 使用带代理配置的HTTP客户端
+                val client = KtorClient.createHttpClient()
                 val response = client.get("https://api.github.com/repos/clevebitr/LumenTV-Compose/releases/latest")
                 val json = Json.decodeFromString<JsonObject>(response.bodyAsText())
                 val tagName = json["tag_name"]?.jsonPrimitive?.content

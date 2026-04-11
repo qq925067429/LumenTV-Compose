@@ -1,11 +1,12 @@
 package com.corner.util.update
 
-import io.ktor.client.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
+import com.corner.util.network.KtorClient
+import io.ktor.client.request.get
+import io.ktor.client.statement.bodyAsText
 
 suspend fun fetchChangelogFromUrl(url: String): String {
-    val client = HttpClient()
+    // 使用带代理配置的HTTP客户端
+    val client = KtorClient.createHttpClient()
     try {
         val response = client.get(url)
         return response.bodyAsText()

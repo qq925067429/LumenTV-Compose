@@ -301,8 +301,9 @@ object SiteViewModel {
 
             val interceptor = M3U8AdFilterInterceptor.Interceptor()
 
-            // 创建OkHttpClient并添加拦截器
-            val client = OkHttpClient.Builder()
+            // 创建OkHttpClient并添加拦截器，使用统一的代理配置
+            val client = com.corner.util.network.createDefaultOkHttpClient()
+                .newBuilder()
                 .addInterceptor(interceptor)
                 .build()
 
@@ -416,7 +417,8 @@ object SiteViewModel {
      * 下载并存储加密密钥
      */
     private fun downloadAndStoreKey(keyUrl: String): String {
-        val client = OkHttpClient()
+        // 使用带代理配置的HTTP客户端
+        val client = com.corner.util.network.createDefaultOkHttpClient()
         val request = Request.Builder().url(keyUrl).build()
 
         val keyData = client.newCall(request).execute().use { response ->
