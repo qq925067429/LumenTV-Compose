@@ -69,6 +69,6 @@ jobs:
       - name: Upload updater artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.binary_name }}
+          name: updater-${{ matrix.artifact_suffix }}
           path: ./updater/${{ matrix.binary_name }}
           retention-days: 1

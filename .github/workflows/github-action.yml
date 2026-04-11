@@ -203,12 +203,12 @@ jobs:
           cp ./linux-file/* ./release-files/ 2>/dev/null || true
           cp ./mac-file/* ./release-files/ 2>/dev/null || true
           
-          # 复制 updater 文件
-          find . -path "*/updater-linux-amd64/updater-linux-amd64" -exec cp {} ./release-files/ \;
-          find . -path "*/updater-linux-arm64/updater-linux-arm64" -exec cp {} ./release-files/ \;
-          find . -path "*/updater-windows-amd64.exe/updater-windows-amd64.exe" -exec cp {} ./release-files/ \;
-          find . -path "*/updater-macos-amd64/updater-macos-amd64" -exec cp {} ./release-files/ \;
-          find . -path "*/updater-macos-arm64/updater-macos-arm64" -exec cp {} ./release-files/ \;
+          # 复制 updater 文件（artifact 名称已包含平台信息）
+          find . -path "*/updater-linux-amd64/updater" -exec cp {} ./release-files/updater-linux-amd64 \;
+          find . -path "*/updater-linux-arm64/updater" -exec cp {} ./release-files/updater-linux-arm64 \;
+          find . -path "*/updater-windows-amd64/updater.exe" -exec cp {} ./release-files/updater-windows-amd64.exe \;
+          find . -path "*/updater-macos-amd64/updater" -exec cp {} ./release-files/updater-macos-amd64 \;
+          find . -path "*/updater-macos-arm64/updater" -exec cp {} ./release-files/updater-macos-arm64 \;
 
           echo "📋 发布文件列表:"
           ls -la ./release-files/
