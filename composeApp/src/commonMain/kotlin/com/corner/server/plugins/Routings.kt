@@ -3,7 +3,6 @@ package com.corner.server.plugins
 import cn.hutool.core.io.file.FileNameUtil
 import com.corner.server.logic.proxy
 import com.corner.util.network.createDefaultOkHttpClient
-import okhttp3.Call
 import com.corner.ui.scene.SnackBar
 import com.corner.util.m3u8.M3U8Cache
 import com.corner.util.toSingleValueMap
@@ -15,13 +14,11 @@ import io.ktor.server.routing.*
 import okhttp3.Response
 import java.io.IOException
 import java.io.InputStream
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.File
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.URLDecoder
-import java.util.concurrent.TimeUnit
 
 fun Application.configureRouting() {
 

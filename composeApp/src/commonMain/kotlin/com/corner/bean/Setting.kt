@@ -141,7 +141,6 @@ object SettingStore {
         try {
             Files.write(Paths.setting(), Jsons.encodeToString(settingFile).toByteArray())
         } catch (e: Exception) {
-            // 打印错误日志，方便排查问题
             e.printStackTrace()
         }
     }

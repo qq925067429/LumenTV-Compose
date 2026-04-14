@@ -224,7 +224,7 @@ object JarLoader {
             )
             return Spider()
         } catch (e: IllegalArgumentException) {
-            // URL 格式错误（如端口为 -1），通常是代理配置问题
+            // URL 格式错误
             log.error("加载Spider时URL格式错误: key={}, api={}, 错误: {}", key, api, e.message, e)
             SnackBar.postMsg(
                 "爬虫加载失败：URL格式错误\n\n错误信息: ${e.message}\n\n可能原因：\n1. 代理配置不正确\n2. Spider内部生成的URL无效\n\n建议：关闭代理后重试，或联系开发者修复Spider",

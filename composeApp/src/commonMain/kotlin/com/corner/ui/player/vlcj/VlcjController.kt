@@ -58,7 +58,7 @@ class VlcjController(val vm: DetailViewModel) : PlayerController {
     private var playerStartTime: Long = 0
     private var playerRealStartTime: Long = 0   // 记录实际开始播放的时间
     private var playerEndTime: Long = 0
-    private val decodeFailureTureShould = 5000L  // 5秒阈值
+    private val decodeFailureTureShould = 5000L // 5秒阈值
 
     private val vlcjArgs = mutableListOf(
         "-q",                                   // 最低级别日志

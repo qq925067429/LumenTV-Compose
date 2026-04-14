@@ -118,6 +118,7 @@ object KtorD {
  * KtorD 模块
  */
 private fun Application.module() {
+    val ports = listOf("9978", "9979", "9980", "9981", "9982", "9983", "9984", "9985", "9986", "9987", "9988", "9989", "9990", "9991", "9992", "9993", "9994", "9995", "9996", "9997", "9998", "9999")
     // 跨域
     install(CORS) {
         allowMethod(HttpMethod.Options)
@@ -129,8 +130,9 @@ private fun Application.module() {
         allowHeader(HttpHeaders.Range)
         allowHeader("X-Requested-With")
         allowNonSimpleContentTypes = true
-        anyHost() // 允许所有主机访问（开发环境）
-        allowCredentials = false // 设置为false避免与具体Origin冲突
+        allowHost("127.0.0.1", ports)
+        allowHost("localhost", ports)
+        allowCredentials = false
     }
 
     // 路由
