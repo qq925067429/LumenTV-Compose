@@ -207,6 +207,17 @@ fun WindowScope.VideoScene(
 
     var showChooseHome by remember { mutableStateOf(false) }
     var showFiltersDialog by remember { mutableStateOf(false) }
+    var showPlaywrightDownloadDialog by remember { mutableStateOf(false) }
+    var playwrightSpiderName by remember { mutableStateOf("") }
+    var isDownloading by remember { mutableStateOf(false) }
+    var downloadProgress by remember { mutableStateOf(0f) }
+
+    LaunchedEffect(model.value.showPlaywrightDownloadDialog) {
+        if (model.value.showPlaywrightDownloadDialog) {
+            showPlaywrightDownloadDialog = true
+            playwrightSpiderName = model.value.playwrightSpiderName
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
@@ -365,6 +376,59 @@ fun WindowScope.VideoScene(
             scope.launch {
                 state.animateScrollToItem(0)
             }
+        }
+        
+        // Playwright 浏览器下载对话框
+        if (showPlaywrightDownloadDialog) {
+            com.corner.ui.scene.PlaywrightDownloadDialog(
+                spiderName = playwrightSpiderName,
+                onConfirm = {
+                    // 开始下载，显示加载指示器
+                    isDownloading = true
+                    downloadProgress = 0f
+                    
+                    // 触发浏览器下载
+                    scope.launch {
+                        try {
+                            val result = com.corner.util.playwright.PlaywrightBrowserManager.ensureBrowserDownloaded(
+                                onProgress = { progress ->
+                                    // 更新进度
+                                    downloadProgress = progress.toFloat()
+                                }
+                            )
+                            
+                            if (result.isSuccess) {
+                                SnackBar.postMsg("浏览器下载成功，请重新加载站源", type = SnackBar.MessageType.SUCCESS)
+                                // 关闭对话框
+                                isDownloading = false
+                                showPlaywrightDownloadDialog = false
+                                // 重新加载主页
+                                vm.homeLoad(forceRefresh = true)
+                            } else {
+                                SnackBar.postMsg("浏览器下载失败: ${result.exceptionOrNull()?.message}", type = SnackBar.MessageType.ERROR)
+                                // 关闭对话框
+                                isDownloading = false
+                                showPlaywrightDownloadDialog = false
+                            }
+                        } catch (e: Exception) {
+                            SnackBar.postMsg("浏览器下载异常: ${e.message}", type = SnackBar.MessageType.ERROR)
+                            // 关闭对话框
+                            isDownloading = false
+                            showPlaywrightDownloadDialog = false
+                        }
+                    }
+                },
+                onCancel = {
+                    // 如果正在下载，不允许取消（或者可以实现中断下载）
+                    if (!isDownloading) {
+                        showPlaywrightDownloadDialog = false
+                        // 取消后重置 ViewModel 中的状态
+                        vm.state.value.copy(showPlaywrightDownloadDialog = false)
+                    }
+                },
+                isDownloading = isDownloading,
+                downloadProgress = downloadProgress
+            )
         }
     }
 }

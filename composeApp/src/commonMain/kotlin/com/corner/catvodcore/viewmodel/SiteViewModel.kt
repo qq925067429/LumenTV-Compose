@@ -25,7 +25,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import okhttp3.Call
 import okhttp3.Headers.Companion.toHeaders
-import okhttp3.Response
 import org.apache.commons.lang3.StringUtils
 import org.slf4j.LoggerFactory
 import java.io.IOException
@@ -39,13 +38,12 @@ import com.corner.util.m3u8.M3U8AdFilterInterceptor
 import com.corner.util.m3u8.M3U8Cache
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.net.URI
 
-object SiteViewModel {
-    private val log = LoggerFactory.getLogger("SiteViewModel")
+private val log = LoggerFactory.getLogger("SiteViewModel")
 
+object SiteViewModel {
     private val _state = MutableStateFlow(ViewModelState())
     val state: MutableStateFlow<ViewModelState> = _state
     val result: MutableState<Result> by lazy { mutableStateOf(Result()) }
@@ -108,6 +106,12 @@ object SiteViewModel {
                     fetchPic(site, Jsons.decodeFromString<Result>(homeContent)).also { result.value = it }
                 }
             }
+        } catch (e: IllegalStateException) {
+            if (e.message?.contains("Playwright", ignoreCase = true) == true) {
+                throw e
+            }
+            log.error("home Content site:{}", site.name, e)
+            return Result(false)
         } catch (e: Exception) {
             log.error("home Content site:{}", site.name, e)
             return Result(false)
@@ -227,7 +231,13 @@ object SiteViewModel {
         val urlType = Url(id).parameters["type"]
         if (urlType == "json" && StringUtils.isNotBlank(id)) {
             // 请求并解析JSON类型的真实链接
-            val responseBody = Http.newCall(id, site.header.toHeaders()).execute().body.string()
+            val responseBody = Http.newCall(id, site.header.toHeaders()).execute().use { response ->
+                if (!response.isSuccessful) {
+                    log.error("获取JSON链接失败，状态码: ${response.code}")
+                    return@use ""
+                }
+                response.body.string()
+            }
             if (StringUtils.isNotBlank(responseBody)) {
                 url = Jsons.decodeFromString<Result>(responseBody).url
             }
@@ -684,10 +694,10 @@ private fun fetchExt(site: Site, params: MutableMap<String, String>, limit: Bool
 }
 
 private fun fetchExt(site: Site): String {
-    val res: Response = Http.newCall(site.ext, site.header.toHeaders()).execute()
-    if (res.code != 200) return ""
-    site.ext = res.body.string()
-    return site.ext
+    return Http.newCall(site.ext, site.header.toHeaders()).execute().use { res ->
+        if (res.code != 200) return@use ""
+        res.body.string().also { site.ext = it }
+    }
 }
 
 private fun fetchPic(site: Site, result: Result): Result {
@@ -698,7 +708,13 @@ private fun fetchPic(site: Site, result: Result): Result {
     params["ac"] = if (site.type == 0) "videolist" else "detail"
     params["ids"] = StringUtils.join(ids, ",")
     val response: String =
-        Http.newCall(site.api, site.header.toHeaders(), params).execute().body.string()
+        Http.newCall(site.api, site.header.toHeaders(), params).execute().use { resp ->
+            if (!resp.isSuccessful) {
+                log.error("获取视频图片失败，状态码: ${resp.code}")
+                return@use ""
+            }
+            resp.body.string()
+        }
     result.list.clear()
     result.list.addAll(Jsons.decodeFromString<Result>(response).list)
     return result

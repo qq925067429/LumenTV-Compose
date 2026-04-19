@@ -29,7 +29,9 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.ContentPaste
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Info
@@ -40,7 +42,9 @@ import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.SystemUpdate
+import androidx.compose.material.icons.filled.Web
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -111,6 +115,7 @@ enum class SettingsCategory(
     VOD("点播", Icons.Filled.LiveTv),
     PLAYER("播放器", Icons.Filled.PlayCircle),
     NETWORK("网络", Icons.Filled.SystemUpdate),
+    PLAYWRIGHT("自动化", Icons.Filled.Web),
     ADVANCED("高级", Icons.Filled.Code),
     ABOUT("关于", Icons.Filled.Info),
 
@@ -289,6 +294,10 @@ fun WindowScope.SettingScene(vm: SettingViewModel, config: M3U8FilterConfig, onC
                             vm = vm,
                             model = model,
                             updateCheckState = updateCheckState,
+                            modifier = Modifier.fillMaxSize()
+                        )
+
+                        SettingsCategory.PLAYWRIGHT -> PlaywrightSettingsContent(
                             modifier = Modifier.fillMaxSize()
                         )
 
@@ -1882,4 +1891,261 @@ fun applyDohSetting(enabled: Boolean, serverName: String) {
 fun resetDohSetting() {
     // 通过反射或添加方法来重置DoH设置
     Http.resetDoh()
+}
+
+/**
+ * Playwright 浏览器设置页面
+ */
+@Composable
+fun PlaywrightSettingsContent(
+    modifier: Modifier = Modifier
+) {
+    var isBrowserAvailable by remember { mutableStateOf(false) }
+    var browserPath by remember { mutableStateOf("") }
+    var cacheDir by remember { mutableStateOf("") }
+    var tempDir by remember { mutableStateOf("") }
+    var showClearCacheDialog by remember { mutableStateOf(false) }
+    var showDownloadDialog by remember { mutableStateOf(false) }
+    var isDownloading by remember { mutableStateOf(false) }
+    var downloadProgress by remember { mutableStateOf(0f) }
+    val scope = rememberCoroutineScope()
+    
+    // 更新浏览器状态的函数
+    fun updateBrowserStatus() {
+        isBrowserAvailable = com.corner.util.playwright.PlaywrightBrowserManager.isBrowserAvailable()
+        browserPath = com.corner.util.playwright.PlaywrightBrowserManager.getBrowserExecutablePath()
+        cacheDir = com.corner.util.playwright.PlaywrightBrowserManager.getBrowserCacheDir()
+        tempDir = com.corner.util.playwright.PlaywrightBrowserManager.getTempDir()
+    }
+    
+    // 加载浏览器状态
+    LaunchedEffect(Unit) {
+        updateBrowserStatus()
+    }
+    
+    fun startDownload() {
+        showDownloadDialog = false
+        isDownloading = true
+        downloadProgress = 0f
+        
+        scope.launch {
+            val result = com.corner.util.playwright.PlaywrightBrowserManager.ensureBrowserDownloaded {
+                progress ->
+                downloadProgress = progress.toFloat()
+            }
+            
+            isDownloading = false
+            if (result.isSuccess) {
+                SnackBar.postMsg("浏览器下载成功", type = SnackBar.MessageType.SUCCESS)
+                updateBrowserStatus()
+            } else {
+                SnackBar.postMsg("浏览器下载失败: ${result.exceptionOrNull()?.message}", type = SnackBar.MessageType.ERROR)
+            }
+        }
+    }
+    
+    fun clearCache() {
+        scope.launch {
+            val success = com.corner.util.playwright.PlaywrightBrowserManager.clearBrowserCache()
+            if (success) {
+                SnackBar.postMsg("缓存已清除", type = SnackBar.MessageType.SUCCESS)
+                updateBrowserStatus()
+            } else {
+                SnackBar.postMsg("清除缓存失败", type = SnackBar.MessageType.ERROR)
+            }
+            showClearCacheDialog = false
+        }
+    }
+    
+    LazyColumn(
+        modifier = modifier.padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        item {
+            SettingCard(
+                title = "Playwright 浏览器状态",
+                icon = Icons.Default.Web
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    // 状态指示器
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "浏览器状态",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Badge(
+                            containerColor = if (isBrowserAvailable) 
+                                MaterialTheme.colorScheme.primaryContainer 
+                            else 
+                                MaterialTheme.colorScheme.errorContainer
+                        ) {
+                            Text(
+                                text = if (isBrowserAvailable) "已安装" else "未安装",
+                                color = if (isBrowserAvailable)
+                                    MaterialTheme.colorScheme.onPrimaryContainer
+                                else
+                                    MaterialTheme.colorScheme.onErrorContainer
+                            )
+                        }
+                    }
+                    
+                    HorizontalDivider()
+                    
+                    // 浏览器路径
+                    if (isBrowserAvailable) {
+                        InfoRow(label = "浏览器路径", value = browserPath)
+                        InfoRow(label = "缓存目录", value = cacheDir)
+                        InfoRow(label = "临时目录", value = tempDir)
+                    } else {
+                        Text(
+                            text = "Playwright 浏览器尚未安装。某些爬虫需要浏览器才能正常工作。",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    // 操作按钮
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        if (!isBrowserAvailable) {
+                            Button(
+                                onClick = { showDownloadDialog = true },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(Icons.Default.Download, contentDescription = null, modifier = Modifier.size(18.dp))
+                                Spacer(Modifier.width(8.dp))
+                                Text("下载浏览器")
+                            }
+                        } else {
+                            OutlinedButton(
+                                onClick = { showDownloadDialog = true },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(Icons.Default.Sync, contentDescription = null, modifier = Modifier.size(18.dp))
+                                Spacer(Modifier.width(8.dp))
+                                Text("重新下载")
+                            }
+                            
+                            OutlinedButton(
+                                onClick = { showClearCacheDialog = true },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    contentColor = MaterialTheme.colorScheme.error
+                                )
+                            ) {
+                                Icon(Icons.Default.DeleteForever, contentDescription = null, modifier = Modifier.size(18.dp))
+                                Spacer(Modifier.width(8.dp))
+                                Text("清除缓存")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        item {
+            SettingCard(
+                title = "使用说明",
+                icon = Icons.Default.Info
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "• Playwright 是一个浏览器自动化工具，用于访问需要 JavaScript 渲染的网站",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Text(
+                        text = "• 首次使用时需要下载 Chromium 浏览器（约 150MB）",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Text(
+                        text = "• 如果浏览器损坏或需要更新，可以使用“重新下载”功能",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Text(
+                        text = "• 清除缓存会删除所有下载的浏览器文件，下次使用时需要重新下载",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
+        }
+    }
+    
+    // 下载确认对话框
+    if (showDownloadDialog && !isDownloading) {
+        PlaywrightDownloadDialog(
+            spiderName = "Playwright 浏览器",
+            onConfirm = { startDownload() },
+            onCancel = { showDownloadDialog = false }
+        )
+    }
+    
+    // 下载进度对话框
+    if (isDownloading) {
+        PlaywrightDownloadDialog(
+            spiderName = "Playwright 浏览器",
+            onConfirm = {},
+            onCancel = { /* 暂不支持中断下载 */ },
+            isDownloading = true,
+            downloadProgress = downloadProgress
+        )
+    }
+    
+    // 清除缓存确认对话框
+    if (showClearCacheDialog) {
+        AlertDialog(
+            onDismissRequest = { showClearCacheDialog = false },
+            title = { Text("确认清除缓存") },
+            text = {
+                Text("此操作将删除所有 Playwright 浏览器文件。\n\n" +
+                     "删除后，使用相关爬虫时需要重新下载浏览器。\n\n" +
+                     "确定要继续吗？")
+            },
+            confirmButton = {
+                Button(
+                    onClick = { clearCache() },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("确认清除")
+                }
+            },
+            dismissButton = {
+                OutlinedButton(onClick = { showClearCacheDialog = false }) {
+                    Text("取消")
+                }
+            }
+        )
+    }
+}
+
+@Composable
+private fun InfoRow(label: String, value: String) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(top = 2.dp)
+        )
+    }
 }

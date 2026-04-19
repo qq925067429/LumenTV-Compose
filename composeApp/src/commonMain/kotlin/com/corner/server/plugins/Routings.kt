@@ -1,12 +1,15 @@
 package com.corner.server.plugins
 
 import cn.hutool.core.io.file.FileNameUtil
+import com.corner.catvodcore.viewmodel.GlobalAppState.hideProgress
+import com.corner.catvodcore.viewmodel.GlobalAppState.showProgress
 import com.corner.server.logic.proxy
 import com.corner.util.network.createDefaultOkHttpClient
 import com.corner.ui.scene.SnackBar
 import com.corner.util.m3u8.M3U8Cache
 import com.corner.util.toSingleValueMap
 import com.corner.util.play.BrowserUtils
+import com.corner.util.playwright.PlaywrightBrowserManager
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
@@ -70,6 +73,62 @@ fun Application.configureRouting() {
          */
         get("/health") {
             call.respondText("OK", ContentType.Text.Plain)
+        }
+
+        /**
+         * 获取浏览器状态
+         */
+        get("/api/playwright/status") {
+            val status = mapOf(
+                "available" to PlaywrightBrowserManager.isBrowserAvailable(),
+                "path" to PlaywrightBrowserManager.getBrowserExecutablePath(),
+                "cacheDir" to PlaywrightBrowserManager.getBrowserCacheDir(),
+                "tempDir" to PlaywrightBrowserManager.getTempDir()
+            )
+            call.respond(status)
+        }
+
+        /**
+         * 显示全局加载指示器
+         * GET /api/progress/show?message=可选的提示消息
+         */
+        get("/api/progress/show") {
+            val message = call.request.queryParameters["message"]
+            showProgress()
+                    
+            // 如果提供了消息，同时显示 SnackBar 提示
+            if (!message.isNullOrBlank()) {
+                SnackBar.postMsg(message, type = SnackBar.MessageType.INFO, key = "api_progress")
+            }
+                    
+            call.respond(mapOf(
+                "success" to true,
+                "message" to "加载指示器已显示"
+            ))
+        }
+        
+        /**
+         * 隐藏全局加载指示器
+         * GET /api/progress/hide
+         */
+        get("/api/progress/hide") {
+            hideProgress()
+                    
+            call.respond(mapOf(
+                "success" to true,
+                "message" to "加载指示器已隐藏"
+            ))
+        }
+                
+        // 保留旧 API 路径以保持兼容性（标记为废弃）
+        get("/postShowProgress") { 
+            showProgress()
+            call.respondText("已显示加载指示器（请使用 /api/progress/show）")
+        }
+        
+        get("/postHideProgress") {
+            hideProgress()
+            call.respondText("已隐藏加载指示器（请使用 /api/progress/hide）")
         }
 
         /**

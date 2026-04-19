@@ -215,6 +215,13 @@ object JarLoader {
         } catch (e: ClassNotFoundException) {
             log.debug("Spider类不存在: {}, api: {}", e.message, api)
             return Spider()
+        } catch (e: IllegalStateException) {
+            if (e.message?.contains("Playwright", ignoreCase = true) == true) {
+                log.warn("Playwright 浏览器未安装: key={}, api={}", key, api)
+                throw e
+            }
+            log.error("加载Spider失败(IllegalStateException): key={}, api={}", key, api, e)
+            return Spider()
         } catch (e: java.net.ConnectException) {
             // 网络连接错误，通常是代理问题
             log.error("加载Spider时网络连接失败: key={}, api={}", key, api, e)
